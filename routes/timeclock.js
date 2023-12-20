@@ -65,8 +65,8 @@ router.get('/check_clock_in/:id', express.json(), (req, res, next) => {
 // clock in
 router.post('/clock_in', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
-        'INSERT INTO `timeclock` (user_id, clock_in) VALUES (?, ?)',
-        [req.body.user_id, req.body.clock_in],
+        'INSERT INTO `timeclock` (user_id, clock_in) VALUES (?, NOW())',
+        [req.body.user_id],
         (err, results, fields) => {
             if (err) {
                 res.json({ status: 'error', message: err });
@@ -78,10 +78,10 @@ router.post('/clock_in', express.json(), checkUserAuthorization, (req, res, next
 });
 
 // clock out
-router.put('/clock_out/:id', express.json(), checkUserAuthorization, (req, res, next) => {
+router.put('/clock_out', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
-        'UPDATE timeclock SET clock_out = ? WHERE timeclock_id = ?',
-        [req.body.clock_out, req.params.id],
+        'UPDATE timeclock SET clock_out = NOW() WHERE timeclock_id = ?',
+        [req.body.timeclock_id],
         function (err, results, fields) {
             if (err) {
                 res.json({ status: 'error', message: err });
