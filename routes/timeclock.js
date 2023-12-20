@@ -78,16 +78,35 @@ router.post('/clock_in', express.json(), checkUserAuthorization, (req, res, next
 });
 
 // clock out
-router.put('/clock_out', express.json(), checkUserAuthorization, (req, res, next) => {
+router.put('/clock_out', express.json(), (req, res, next) => {
     connection.execute(
-        'UPDATE timeclock SET clock_out = NOW() WHERE timeclock_id = ?',
-        [req.body.timeclock_id],
+        'SELECT * FROM office',
         function (err, results, fields) {
             if (err) {
                 res.json({ status: 'error', message: err });
                 return;
             }
-            res.json({ status: 'success' });
+
+            const endTimeString = results[0].end;
+            const endTime = new Date('1970-01-01T' + endTimeString);
+            const currentTime = new Date();
+
+            if (endTime.toLocaleTimeString() > currentTime.toLocaleTimeString()) {
+                res.json({ status: 'wait' });
+                return;
+            }
+
+            connection.execute(
+                'UPDATE timeclock SET clock_out = NOW() WHERE timeclock_id = ?',
+                [req.body.timeclock_id],
+                function (err, results, fields) {
+                    if (err) {
+                        res.json({ status: 'error', message: err });
+                        return;
+                    }
+                    res.json({ status: 'success' });
+                }
+            );
         }
     );
 });
