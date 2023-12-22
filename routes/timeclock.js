@@ -63,38 +63,53 @@ router.get('/check_clock_in/:id', express.json(), (req, res, next) => {
 });
 
 // clock in
-router.post('/clock_in', express.json(), checkUserAuthorization, (req, res, next) => {
+router.post('/clock_in', express.json(), (req, res, next) => {
     connection.execute(
-        'INSERT INTO `timeclock` (user_id, clock_in) VALUES (?, NOW())',
-        [req.body.user_id],
+        'SELECT * FROM leave_requests WHERE status = 1 AND deleted = 1 AND CURDATE() BETWEEN start_date AND end_date',
         (err, results, fields) => {
             if (err) {
                 res.json({ status: 'error', message: err });
                 return;
             }
-            res.json({ status: 'success' });
+
+            if (results.length > 0) {
+                res.json({ status: 'leave' });
+                return;
+            }
+            
+            connection.execute(
+                'INSERT INTO `timeclock` (user_id, clock_in) VALUES (?, NOW())',
+                [req.body.user_id],
+                (err, results, fields) => {
+                    if (err) {
+                        res.json({ status: 'error', message: err });
+                        return;
+                    }
+                    res.json({ status: 'success' });
+                }
+            );
         }
     );
 });
 
 // clock out
 router.put('/clock_out', express.json(), (req, res, next) => {
-    connection.execute(
-        'SELECT * FROM office',
-        function (err, results, fields) {
-            if (err) {
-                res.json({ status: 'error', message: err });
-                return;
-            }
+    // connection.execute(
+    //     'SELECT * FROM office',
+    //     function (err, results, fields) {
+    //         if (err) {
+    //             res.json({ status: 'error', message: err });
+    //             return;
+    //         }
 
-            const endTimeString = results[0].end;
-            const endTime = new Date('1970-01-01T' + endTimeString);
-            const currentTime = new Date();
+    //         const endTimeString = results[0].end;
+    //         const endTime = new Date('1970-01-01T' + endTimeString);
+    //         const currentTime = new Date();
 
-            if (endTime.toLocaleTimeString() > currentTime.toLocaleTimeString()) {
-                res.json({ status: 'wait' });
-                return;
-            }
+    //         if (endTime.toLocaleTimeString() > currentTime.toLocaleTimeString()) {
+    //             res.json({ status: 'wait' });
+    //             return;
+    //         }
 
             connection.execute(
                 'UPDATE timeclock SET clock_out = NOW() WHERE timeclock_id = ?',
@@ -107,8 +122,8 @@ router.put('/clock_out', express.json(), (req, res, next) => {
                     res.json({ status: 'success' });
                 }
             );
-        }
-    );
+    //     }
+    // );
 });
 
 // update timeclock

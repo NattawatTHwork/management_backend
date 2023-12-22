@@ -50,14 +50,30 @@ router.get('/my_leave/:id', express.json(), checkUserAuthorization, (req, res, n
 // create leave
 router.post('/create_leave', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
-        'INSERT INTO `leave_requests` (user_id, leave_type, description, start_date, end_date) VALUES (?, ?, ?, ?, ?)',
-        [req.body.user_id, req.body.leave_type, req.body.description, req.body.start_date, req.body.end_date],
+        'SELECT * FROM leave_requests WHERE deleted = 1 AND user_id = ? AND start_date BETWEEN ? AND ? AND end_date BETWEEN ? AND ?',
+        [req.body.user_id, req.body.start_date, req.body.end_date, req.body.start_date, req.body.end_date],
         (err, results, fields) => {
             if (err) {
                 res.json({ status: 'error', message: err });
                 return;
             }
-            res.json({ status: 'success' });
+
+            if (results.length > 0) {
+                res.json({ status: 'overlap' });
+                return;
+            }
+
+            connection.execute(
+                'INSERT INTO `leave_requests` (user_id, leave_type, description, start_date, end_date) VALUES (?, ?, ?, ?, ?)',
+                [req.body.user_id, req.body.leave_type, req.body.description, req.body.start_date, req.body.end_date],
+                (err, results, fields) => {
+                    if (err) {
+                        res.json({ status: 'error', message: err });
+                        return;
+                    }
+                    res.json({ status: 'success' });
+                }
+            );
         }
     );
 });
@@ -65,35 +81,51 @@ router.post('/create_leave', express.json(), checkUserAuthorization, (req, res, 
 // update leave
 router.put('/update_leave/:id', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
-        'SELECT status FROM leave_requests WHERE leave_requests_id = ?',
-        [req.params.id],
-        function (err, results, fields) {
+        'SELECT * FROM leave_requests WHERE deleted = 1 AND user_id = ? AND start_date BETWEEN ? AND ? AND end_date BETWEEN ? AND ? AND leave_requests_id <> ?',
+        [req.body.user_id, req.body.start_date, req.body.end_date, req.body.start_date, req.body.end_date, req.params.id],
+        (err, results, fields) => {
             if (err) {
                 res.json({ status: 'error', message: err });
                 return;
             }
 
-            if (results.length === 0) {
-                res.json({ status: 'nofound', message: 'Leave request not found' });
-                return;
-            }
-
-            const currentStatus = results[0].status;
-
-            if (currentStatus !== 2) {
-                res.json({ status: 'cant_update', message: 'Leave request status is not 2 (Pending)' });
+            if (results.length > 0) {
+                res.json({ status: 'overlap' });
                 return;
             }
 
             connection.execute(
-                'UPDATE leave_requests SET leave_type = ?, description = ?, start_date = ?, end_date = ?, status = ? WHERE leave_requests_id = ?',
-                [req.body.leave_type, req.body.description, req.body.start_date, req.body.end_date, req.body.status, req.params.id],
+                'SELECT status FROM leave_requests WHERE leave_requests_id = ?',
+                [req.params.id],
                 function (err, results, fields) {
                     if (err) {
                         res.json({ status: 'error', message: err });
                         return;
                     }
-                    res.json({ status: 'success' });
+
+                    if (results.length === 0) {
+                        res.json({ status: 'nofound', message: 'Leave request not found' });
+                        return;
+                    }
+
+                    const currentStatus = results[0].status;
+
+                    if (currentStatus !== 2) {
+                        res.json({ status: 'cant_update', message: 'Leave request status is not 2 (Pending)' });
+                        return;
+                    }
+
+                    connection.execute(
+                        'UPDATE leave_requests SET leave_type = ?, description = ?, start_date = ?, end_date = ?, status = ? WHERE leave_requests_id = ?',
+                        [req.body.leave_type, req.body.description, req.body.start_date, req.body.end_date, req.body.status, req.params.id],
+                        function (err, results, fields) {
+                            if (err) {
+                                res.json({ status: 'error', message: err });
+                                return;
+                            }
+                            res.json({ status: 'success' });
+                        }
+                    );
                 }
             );
         }
