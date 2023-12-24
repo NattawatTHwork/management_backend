@@ -8,7 +8,7 @@ const secret = process.env.SECRET_KEY;
 
 router.post('/', express.json(), (req, res, next) => {
     connection.execute(
-        'SELECT * FROM user WHERE email = ?',
+        'SELECT * FROM user INNER JOIN rank ON user.rank = rank.rank_id WHERE email = ?',
         [req.body.email],
         (err, users, fields) => {
             if (err) {
@@ -38,7 +38,7 @@ router.post('/', express.json(), (req, res, next) => {
 
             bcrypt.compare(req.body.password, users[0].password, function (err, isLogin) {
                 if (isLogin) {
-                    var token = jwt.sign({ user_id: users[0].user_id, role: users[0].role }, secret, { expiresIn: '1h' });
+                    var token = jwt.sign({ user_id: users[0].user_id, role: users[0].role, rank_s: users[0].rank_s, firstname: users[0].firstname, lastname: users[0].lastname }, secret, { expiresIn: '1h' });
                     res.json({ status: 'success', message: users[0].role, token });
                 } else {
                     res.json({ status: 'failed', message: 'Login Failed' });

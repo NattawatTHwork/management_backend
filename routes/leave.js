@@ -6,7 +6,7 @@ const checkUserAuthorization = require('./checkUserAuthorization');
 // get all leave
 router.get('/', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
-        'SELECT * FROM leave_requests WHERE deleted = 1',
+        'SELECT * FROM leave_requests WHERE deleted = 1 ORDER BY leave_requests_id DESC',
         (err, results, fields) => {
             if (err) {
                 res.json({ status: 'error', message: err });
@@ -35,7 +35,7 @@ router.get('/:id', express.json(), checkUserAuthorization, (req, res, next) => {
 // get my user leave
 router.get('/my_leave/:id', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
-        'SELECT * FROM leave_requests WHERE deleted = 1 AND user_id = ?',
+        'SELECT * FROM leave_requests WHERE deleted = 1 AND user_id = ? ORDER BY leave_requests_id DESC',
         [req.params.id],
         (err, results, fields) => {
             if (err) {
@@ -132,6 +132,20 @@ router.put('/update_leave/:id', express.json(), checkUserAuthorization, (req, re
     );
 });
 
+// change status
+router.put('/change_status/:id', express.json(), (req, res, next) => {
+    connection.execute(
+        'UPDATE leave_requests SET status = ? WHERE leave_requests_id = ?',
+        [req.body.status, req.params.id],
+        function (err, results, fields) {
+            if (err) {
+                res.json({ status: 'error', message: err });
+                return;
+            }
+            res.json({ status: 'success' });
+        }
+    );
+});
 
 // delete leave
 router.put('/delete_leave/:id', express.json(), checkUserAuthorization, (req, res, next) => {
