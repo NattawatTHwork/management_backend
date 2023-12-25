@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 13, 2023 at 08:13 PM
+-- Generation Time: Dec 25, 2023 at 07:47 PM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 7.4.30
 
@@ -43,11 +43,8 @@ CREATE TABLE `leave_requests` (
 --
 
 INSERT INTO `leave_requests` (`leave_requests_id`, `user_id`, `leave_type`, `description`, `start_date`, `end_date`, `status`, `deleted`) VALUES
-(1, 3, 2, 'travel', '2023-12-15', '2023-12-15', 2, 1),
-(2, 3, 2, 'travel', '2023-12-18', '2023-12-18', 2, 1),
-(3, 3, 2, 'travel', '2023-12-19', '2023-12-20', 2, 1),
-(4, 3, 1, '55555', '2023-12-27', '2023-12-28', 2, 1),
-(5, 3, 1, '789', '2024-01-01', '2024-01-02', 2, 1);
+(6, 3, 2, 'travel', '2023-12-16', '2023-12-17', 3, 1),
+(8, 3, 1, 'sick', '2023-12-23', '2023-12-31', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -67,7 +64,7 @@ CREATE TABLE `office` (
 --
 
 INSERT INTO `office` (`office_id`, `company`, `start`, `end`) VALUES
-(1, 'Avionics 411', '08:00:00', '16:00:00');
+(1, 'Avionics 411', '08:00:00', '22:30:00');
 
 -- --------------------------------------------------------
 
@@ -144,7 +141,12 @@ INSERT INTO `responsible` (`responsible_id`, `task_id`, `user_id`, `status`, `de
 (7, 2, 3, 0, 0),
 (8, 1, 3, 0, 1),
 (9, 1, 6, 1, 1),
-(10, 2, 6, 1, 1);
+(10, 2, 6, 1, 1),
+(11, 4, 4, 0, 0),
+(12, 4, 3, 0, 0),
+(13, 4, 3, 0, 1),
+(14, 4, 6, 0, 0),
+(15, 4, 4, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -168,7 +170,8 @@ CREATE TABLE `task` (
 INSERT INTO `task` (`task_id`, `title`, `description`, `schedule`, `status`, `deleted`) VALUES
 (1, 'งานเลี้ยงพบปะนักบิน', 'ฝ่ายสื่อสารอิเล็กทรอนิกส์ + นักบิน', '2023-12-07 12:00:00', 1, 1),
 (2, 'กินเลี้ยงฝูงบิน411', 'เชิญทุกคน', '2023-12-26 17:00:00', 1, 1),
-(3, '', '', '2023-12-06 18:26:00', 1, 0);
+(3, '', '', '2023-12-06 18:26:00', 1, 0),
+(4, 'ปีใหม่', '2567', '2023-12-31 09:00:00', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -180,8 +183,19 @@ CREATE TABLE `timeclock` (
   `timeclock_id` int(10) NOT NULL,
   `user_id` int(10) DEFAULT NULL,
   `clock_in` datetime DEFAULT NULL,
-  `clock_out` datetime DEFAULT NULL
+  `clock_out` datetime DEFAULT NULL,
+  `deleted` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `timeclock`
+--
+
+INSERT INTO `timeclock` (`timeclock_id`, `user_id`, `clock_in`, `clock_out`, `deleted`) VALUES
+(1, 3, '2023-12-19 07:01:04', '2023-12-19 20:24:06', 1),
+(5, 3, '2023-12-20 19:11:41', '2023-12-20 22:58:54', 1),
+(6, 3, '2023-12-21 18:12:37', '2023-12-21 18:23:09', 1),
+(7, 3, '2023-12-22 20:32:28', '2023-12-22 20:32:31', 1);
 
 -- --------------------------------------------------------
 
@@ -212,10 +226,10 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`user_id`, `firstname`, `lastname`, `rank`, `position`, `email`, `tel`, `password`, `password_view`, `code_verify`, `role`, `status`, `img_path`, `deleted`) VALUES
 (2, 'John', 'Doe', 7, 1, 'admin@gmail.com', '1234567890', '$2b$10$zxWC4bbNhQILDECr9FjoROUROdvCR/8wpW8VWRM9ie.FgPZ1IMQme', '123456', NULL, 1, 1, '1', 1),
-(3, 'ณัฐวัตร', 'ทุ่งเย็น', 3, 1, 'nattawat@gmail.com', '0979434960', '$2b$10$W5aV912tirA39ZKi.6KLuOnYcPyhWjs7iuLYqbd/9Cz2MU02wAwJy', '123456', '108457', 3, 1, '1', 1),
+(3, 'ณัฐวัตร', 'ทุ่งเย็น', 3, 1, 'nattawat@gmail.com', '0979434960', '$2b$10$W5aV912tirA39ZKi.6KLuOnYcPyhWjs7iuLYqbd/9Cz2MU02wAwJy', '123456', '123456', 3, 1, '1', 1),
 (4, 'ปริญญา', 'เรืองจันทร์', 1, 2, 'parinya@gmail.com', '1234567890', '$2b$10$edOBey1v0nlz0PGANywzSOPqUadAjijK.5kdKbxn3YsEHtRnAx/9W', '123456', '547766', 3, 1, '1', 1),
 (5, 'trdsf', 'dsfdsfa', 1, 1, 'dsfas', 'sdaf', '$2b$10$o7rJdviTxayh31HZXOODhODz4zsBSABhsREV.5BxooSJmf/kPgUfa', 'dsaf', '957836', 2, 1, '1', 0),
-(6, 'อธิพงศ์', 'พิลาทอง', 9, 1, 'atipong@gmail.com', '099999999', '$2b$10$rZqP8KR0zq9DfwzciH5iWOJQLtLQop8kvBO4Jshy0OlA34LnD6FJi', '123456', '495360', 2, 1, '1', 1);
+(6, 'อธิพงศ์', 'พิลาทอง', 9, 1, 'atipong@gmail.com', '099999999', '$2b$10$rZqP8KR0zq9DfwzciH5iWOJQLtLQop8kvBO4Jshy0OlA34LnD6FJi', '123456', '123456', 2, 1, '1', 1);
 
 --
 -- Indexes for dumped tables
@@ -277,7 +291,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `leave_requests`
 --
 ALTER TABLE `leave_requests`
-  MODIFY `leave_requests_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `leave_requests_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `office`
@@ -301,19 +315,19 @@ ALTER TABLE `rank`
 -- AUTO_INCREMENT for table `responsible`
 --
 ALTER TABLE `responsible`
-  MODIFY `responsible_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `responsible_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `task`
 --
 ALTER TABLE `task`
-  MODIFY `task_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `task_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `timeclock`
 --
 ALTER TABLE `timeclock`
-  MODIFY `timeclock_id` int(10) NOT NULL AUTO_INCREMENT;
+  MODIFY `timeclock_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `user`
