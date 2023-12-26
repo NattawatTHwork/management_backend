@@ -65,7 +65,8 @@ router.get('/check_clock_in/:id', express.json(), (req, res, next) => {
 // clock in
 router.post('/clock_in', express.json(), (req, res, next) => {
     connection.execute(
-        'SELECT * FROM leave_requests WHERE status = 1 AND deleted = 1 AND CURDATE() BETWEEN start_date AND end_date',
+        'SELECT * FROM leave_requests WHERE user_id = ? AND status = 1 AND deleted = 1 AND CURDATE() BETWEEN start_date AND end_date',
+        [req.body.user_id],
         (err, results, fields) => {
             if (err) {
                 res.json({ status: 'error', message: err });
