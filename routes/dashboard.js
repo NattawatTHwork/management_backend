@@ -54,6 +54,25 @@ router.get('/user', express.json(), (req, res, next) => {
     );
 });
 
+// get today status
+router.get('/today_status', express.json(), (req, res, next) => {
+    const local_date = new Date().toLocaleDateString(); // This is the local date because mysql uses the DATE_FORMAT function to get the local date.
+    connection.execute(
+        'SELECT ' +
+        '(SELECT COUNT(*) FROM user WHERE role = 3 AND deleted = 1) AS total_users, ' +
+        '(SELECT COUNT(*) FROM leave_requests WHERE status = 1 AND CURDATE() BETWEEN start_date AND end_date) AS leave_requests_count, ' +
+        '(SELECT COUNT(*) FROM timeclock WHERE DATE_FORMAT(clock_in, "%m/%d/%Y") = ?) AS timeclock_count',
+        [local_date],
+        (err, results, fields) => {
+            if (err) {
+                res.json({ status: 'error', message: err });
+                return;
+            }
+            res.json({ status: 'success', message: results })
+        }
+    );
+});
+
 // get this rank
 router.get('/:id', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
