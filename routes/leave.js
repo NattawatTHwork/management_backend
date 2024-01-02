@@ -133,7 +133,7 @@ router.put('/update_leave/:id', express.json(), checkUserAuthorization, (req, re
 });
 
 // change status
-router.put('/change_status/:id', express.json(), (req, res, next) => {
+router.put('/change_status/:id', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
         'UPDATE leave_requests SET status = ? WHERE leave_requests_id = ?',
         [req.body.status, req.params.id],

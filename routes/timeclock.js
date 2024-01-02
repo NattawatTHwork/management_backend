@@ -48,7 +48,7 @@ router.get('/my_timeclock/:id', express.json(), checkUserAuthorization, (req, re
 });
 
 // get my user clock in
-router.get('/check_clock_in/:id', express.json(), (req, res, next) => {
+router.get('/check_clock_in/:id', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
         'SELECT * FROM timeclock WHERE deleted = 1 AND user_id = ? AND DATE(clock_in) = CURDATE()',
         [req.params.id],
@@ -63,7 +63,7 @@ router.get('/check_clock_in/:id', express.json(), (req, res, next) => {
 });
 
 // clock in
-router.post('/clock_in', express.json(), (req, res, next) => {
+router.post('/clock_in', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
         'SELECT * FROM leave_requests WHERE user_id = ? AND status = 1 AND deleted = 1 AND CURDATE() BETWEEN start_date AND end_date',
         [req.body.user_id],
@@ -94,7 +94,7 @@ router.post('/clock_in', express.json(), (req, res, next) => {
 });
 
 // clock out
-router.put('/clock_out', express.json(), (req, res, next) => {
+router.put('/clock_out', express.json(), checkUserAuthorization, (req, res, next) => {
     // connection.execute(
     //     'SELECT * FROM office',
     //     function (err, results, fields) {
