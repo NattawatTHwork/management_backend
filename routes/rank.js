@@ -35,8 +35,8 @@ router.get('/:id', express.json(), checkUserAuthorization, (req, res, next) => {
 // create rank
 router.post('/create_rank', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
-        'INSERT INTO `rank` (rank, rank_s) VALUES (?, ?)',
-        [req.body.rank, req.body.rank_s],
+        'INSERT INTO `rank` (rank, rank_s, level) VALUES (?, ?, ?)',
+        [req.body.rank, req.body.rank_s, req.body.level],
         (err, results, fields) => {
             if (err) {
                 res.json({ status: 'error', message: err });
@@ -50,8 +50,8 @@ router.post('/create_rank', express.json(), checkUserAuthorization, (req, res, n
 // update rank
 router.put('/update_rank/:id', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
-        'UPDATE rank SET rank = ?, rank_s = ? WHERE rank_id = ?',
-        [req.body.rank, req.body.rank_s, req.params.id],
+        'UPDATE rank SET rank = ?, rank_s = ?, level = ? WHERE rank_id = ?',
+        [req.body.rank, req.body.rank_s, req.body.level, req.params.id],
         function (err, results, fields) {
             if (err) {
                 res.json({ status: 'error', message: err });

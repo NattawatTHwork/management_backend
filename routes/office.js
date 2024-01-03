@@ -20,8 +20,8 @@ router.get('/', express.json(), checkUserAuthorization, (req, res, next) => {
 // update office
 router.put('/update_office/:id', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
-        'UPDATE office SET company = ?, start = ?, end = ? WHERE office_id = ?',
-        [req.body.company, req.body.start, req.body.end, req.params.id],
+        'UPDATE office SET company = ?, start = ?, end = ?, latitude = ?, longitude = ? WHERE office_id = ?',
+        [req.body.company, req.body.start, req.body.end, req.body.latitude, req.body.longitude, req.params.id],
         function (err, results, fields) {
             if (err) {
                 res.json({ status: 'error', message: err });

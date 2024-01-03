@@ -30,7 +30,7 @@ router.post('/', express.json(), (req, res, next) => {
                 res.json({ status: 'norights', message: 'No rights' });
                 return;
             }
-            
+
             if (users[0].code_verify != req.body.code_verify) {
                 res.json({ status: 'noverify', message: 'No Verify' });
                 return;
@@ -38,8 +38,22 @@ router.post('/', express.json(), (req, res, next) => {
 
             bcrypt.compare(req.body.password, users[0].password, function (err, isLogin) {
                 if (isLogin) {
-                    var token = jwt.sign({ user_id: users[0].user_id, role: users[0].role, rank_s: users[0].rank_s, firstname: users[0].firstname, lastname: users[0].lastname }, secret, { expiresIn: '1h' });
-                    res.json({ status: 'success', message: users[0].role, token });
+                    var token = jwt.sign({ user_id: users[0].user_id, role: users[0].role, rank_s: users[0].rank_s, firstname: users[0].firstname, lastname: users[0].lastname }, secret);
+                    if (token) {
+                        const code_verify = Math.floor(100000 + Math.random() * 900000);
+                        connection.execute(
+                            'UPDATE user SET code_verify = ? WHERE user_id = ?',
+                            [code_verify, users[0].user_id],
+                            function (err, results, fields) {
+                                if (err) {
+                                    res.json({ status: 'error', message: err });
+                                    return;
+                                }
+                                res.json({ status: 'success', message: users[0].role, token });                            }
+                        );
+                    } else {
+                        res.json({ status: 'failed', message: 'Login Failed' });
+                    }
                 } else {
                     res.json({ status: 'failed', message: 'Login Failed' });
                 }
@@ -48,7 +62,7 @@ router.post('/', express.json(), (req, res, next) => {
     );
 });
 
-router.post('/adminlogin', express.json(), (req, res, next) => {
+router.post('/superadminlogin', express.json(), (req, res, next) => {
     connection.execute(
         'SELECT * FROM user WHERE email = ?',
         [req.body.email],
