@@ -6,7 +6,7 @@ const checkUserAuthorization = require('./checkUserAuthorization');
 // get all task
 router.get('/', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
-        'SELECT * FROM task WHERE deleted = 1',
+        'SELECT * FROM task WHERE deleted = 1 ORDER BY task_id DESC',
         (err, results, fields) => {
             if (err) {
                 res.json({ status: 'error', message: err });

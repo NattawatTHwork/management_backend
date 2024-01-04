@@ -6,7 +6,11 @@ const checkUserAuthorization = require('./checkUserAuthorization');
 // get all leave
 router.get('/', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
-        'SELECT * FROM leave_requests WHERE deleted = 1 ORDER BY leave_requests_id DESC',
+        'SELECT leave_requests_id, leave_requests.user_id AS leave_requests_user_id, leave_type, start_date, end_date, leave_requests.status AS leave_requests_status, leave_requests.deleted AS leave_requests_deleted,' +
+        'user.user_id AS user_user_id, firstname, lastname, user.rank AS user_rank,' +
+        'rank_id, rank_s, rank.rank AS rank_rank ' +
+        'FROM leave_requests INNER JOIN user ON leave_requests.user_id = user.user_id INNER JOIN rank ON user.rank = rank_id ' +
+        'WHERE leave_requests.deleted = 1 ORDER BY leave_requests_id DESC',
         (err, results, fields) => {
             if (err) {
                 res.json({ status: 'error', message: err });
@@ -20,7 +24,11 @@ router.get('/', express.json(), checkUserAuthorization, (req, res, next) => {
 // get this leave
 router.get('/:id', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
-        'SELECT * FROM leave_requests WHERE deleted = 1 AND leave_requests_id = ?',
+        'SELECT leave_requests_id, leave_requests.user_id AS leave_requests_user_id, leave_type, description, start_date, end_date, leave_requests.status AS leave_requests_status, leave_requests.deleted AS leave_requests_deleted,' +
+        'user.user_id AS user_user_id, firstname, lastname, user.rank AS user_rank,' +
+        'rank_id, rank_s, rank.rank AS rank_rank ' +
+        'FROM leave_requests INNER JOIN user ON leave_requests.user_id = user.user_id INNER JOIN rank ON user.rank = rank_id ' +
+        'WHERE leave_requests.deleted = 1 AND leave_requests_id = ? ORDER BY leave_requests_id DESC',
         [req.params.id],
         (err, results, fields) => {
             if (err) {

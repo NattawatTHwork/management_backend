@@ -56,7 +56,7 @@ router.get('/user/:id', express.json(), checkUserAuthorization, (req, res, next)
 // create user
 router.post('/create_user', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
-        'SELECT * FROM user WHERE email = ?',
+        'SELECT * FROM user WHERE email = ? AND deleted = 1',
         [req.body.email],
         (err, results, fields) => {
             if (err) {

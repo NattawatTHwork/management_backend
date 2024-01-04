@@ -16,6 +16,6 @@ app.use('/timeclock', require('./routes/timeclock'));
 app.use('/timesheet', require('./routes/timesheet'));
 app.use('/dashboard', require('./routes/dashboard'));
 
-app.listen(3000, function () {
-    console.log('CORS-enabled web server listening on port 3000');
+app.listen(5000, function () {
+    console.log('CORS-enabled web server listening on port 5000');
 });
