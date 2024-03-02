@@ -15,6 +15,8 @@ app.use('/leave', require('./routes/leave'));
 app.use('/timeclock', require('./routes/timeclock'));
 app.use('/timesheet', require('./routes/timesheet'));
 app.use('/dashboard', require('./routes/dashboard'));
+app.use('/equipment', require('./routes/equipment'));
+app.use('/borrow', require('./routes/borrow'));
 
 app.listen(5000, function () {
     console.log('CORS-enabled web server listening on port 5000');
