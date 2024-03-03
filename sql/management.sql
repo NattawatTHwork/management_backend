@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 04, 2024 at 11:39 AM
--- Server version: 10.4.25-MariaDB
--- PHP Version: 7.4.30
+-- Generation Time: Mar 03, 2024 at 08:22 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,6 +24,53 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `borrow`
+--
+
+CREATE TABLE `borrow` (
+  `borrow_id` int(10) NOT NULL,
+  `user_id` int(10) DEFAULT NULL,
+  `equipment_id` int(10) DEFAULT NULL,
+  `borrow_date` datetime DEFAULT NULL,
+  `return_date` datetime DEFAULT NULL,
+  `deleted` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `borrow`
+--
+
+INSERT INTO `borrow` (`borrow_id`, `user_id`, `equipment_id`, `borrow_date`, `return_date`, `deleted`) VALUES
+(1, 3, 2, '2024-03-04 00:25:58', '2024-03-04 00:31:39', 1),
+(2, 3, 2, '2024-03-04 00:35:10', NULL, 1),
+(4, 4, 3, '2024-03-04 02:04:01', '2024-03-04 02:16:38', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `equipment`
+--
+
+CREATE TABLE `equipment` (
+  `equipment_id` int(10) NOT NULL,
+  `equipment` varchar(255) DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=enable, 0=disable',
+  `deleted` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `equipment`
+--
+
+INSERT INTO `equipment` (`equipment_id`, `equipment`, `status`, `deleted`) VALUES
+(1, 'ค้อน', 0, 1),
+(2, 'ไขขวง', 1, 1),
+(3, 'คีม', 1, 1),
+(4, 'ใบเลื่อย', 1, 0);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `leave_requests`
 --
 
@@ -36,11 +83,14 @@ CREATE TABLE `leave_requests` (
   `end_date` date DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT 2,
   `deleted` tinyint(1) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `leave_requests`
 --
+
+INSERT INTO `leave_requests` (`leave_requests_id`, `user_id`, `leave_type`, `description`, `start_date`, `end_date`, `status`, `deleted`) VALUES
+(1, 3, 1, 'ไข้', '2024-03-02', '2024-03-02', 2, 1);
 
 -- --------------------------------------------------------
 
@@ -55,7 +105,7 @@ CREATE TABLE `office` (
   `end` time DEFAULT NULL,
   `latitude` varchar(50) NOT NULL DEFAULT '13.765280063022878',
   `longitude` varchar(50) NOT NULL DEFAULT '100.5383781917591'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `office`
@@ -74,12 +124,14 @@ CREATE TABLE `position` (
   `position_id` int(10) NOT NULL,
   `position` varchar(50) DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `position`
 --
 
+INSERT INTO `position` (`position_id`, `position`, `deleted`) VALUES
+(1, 'ช่างอิเล็กทรอนิกส์', 1);
 
 -- --------------------------------------------------------
 
@@ -93,11 +145,14 @@ CREATE TABLE `rank` (
   `rank_s` varchar(50) DEFAULT NULL,
   `level` int(3) DEFAULT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `rank`
 --
+
+INSERT INTO `rank` (`rank_id`, `rank`, `rank_s`, `level`, `deleted`) VALUES
+(1, 'พันจ่าอากาศตรี', 'พ.อ.ต.', 2, 1);
 
 -- --------------------------------------------------------
 
@@ -111,11 +166,15 @@ CREATE TABLE `responsible` (
   `user_id` int(10) DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0=disable, 1=enable',
   `deleted` tinyint(1) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `responsible`
 --
+
+INSERT INTO `responsible` (`responsible_id`, `task_id`, `user_id`, `status`, `deleted`) VALUES
+(1, 1, 3, 0, 1),
+(2, 1, 0, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -130,11 +189,15 @@ CREATE TABLE `task` (
   `schedule` datetime DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT 1,
   `deleted` tinyint(1) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `task`
 --
+
+INSERT INTO `task` (`task_id`, `title`, `description`, `schedule`, `status`, `deleted`) VALUES
+(1, 'เดินป่า', 'เดินป่า', '2024-03-03 06:30:00', 1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -147,11 +210,7 @@ CREATE TABLE `timeclock` (
   `clock_in` datetime DEFAULT NULL,
   `clock_out` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `timeclock`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -174,18 +233,32 @@ CREATE TABLE `user` (
   `status` tinyint(1) DEFAULT 1,
   `img_path` text DEFAULT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user`
 --
 
 INSERT INTO `user` (`user_id`, `firstname`, `lastname`, `rank`, `position`, `email`, `tel`, `password`, `password_view`, `code_verify`, `role`, `status`, `img_path`, `deleted`) VALUES
-(2, 'John', 'Doe', 7, 1, 'admin@gmail.com', '1234567890', '$2b$10$zxWC4bbNhQILDECr9FjoROUROdvCR/8wpW8VWRM9ie.FgPZ1IMQme', '123456', NULL, 1, 1, '1', 1);
+(2, 'John', 'Doe', 7, 1, 'admin@gmail.com', '1234567890', '$2b$10$zxWC4bbNhQILDECr9FjoROUROdvCR/8wpW8VWRM9ie.FgPZ1IMQme', '123456', NULL, 1, 1, '1', 1),
+(3, 'ณัฐวัตร', 'ทุ่งเย็น', 1, 1, 'nattawat@gmail.com', '1234567890', '$2b$10$sPAyiu05mLSPphEq7BZXO.6PjyGG6FNpUfPpGBNoDdHN19KvQoW3e', '123456', '502296', 3, 1, '1', 1),
+(4, 'ปริญญา', 'เรืองจันทร์', 1, 1, 'parinya@gmail.com', '1234567890', '$2b$10$ui3kO/u.vpkFx7glOUDhL.ParfC5pXOjn6GJ79fNoM2LyCGmZrdua', '123456', '844196', 3, 1, '1', 1);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `borrow`
+--
+ALTER TABLE `borrow`
+  ADD PRIMARY KEY (`borrow_id`);
+
+--
+-- Indexes for table `equipment`
+--
+ALTER TABLE `equipment`
+  ADD PRIMARY KEY (`equipment_id`);
 
 --
 -- Indexes for table `leave_requests`
@@ -240,10 +313,22 @@ ALTER TABLE `user`
 --
 
 --
+-- AUTO_INCREMENT for table `borrow`
+--
+ALTER TABLE `borrow`
+  MODIFY `borrow_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `equipment`
+--
+ALTER TABLE `equipment`
+  MODIFY `equipment_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `leave_requests`
 --
 ALTER TABLE `leave_requests`
-  MODIFY `leave_requests_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `leave_requests_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `office`
@@ -255,37 +340,37 @@ ALTER TABLE `office`
 -- AUTO_INCREMENT for table `position`
 --
 ALTER TABLE `position`
-  MODIFY `position_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `position_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `rank`
 --
 ALTER TABLE `rank`
-  MODIFY `rank_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `rank_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `responsible`
 --
 ALTER TABLE `responsible`
-  MODIFY `responsible_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `responsible_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `task`
 --
 ALTER TABLE `task`
-  MODIFY `task_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `task_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `timeclock`
 --
 ALTER TABLE `timeclock`
-  MODIFY `timeclock_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `timeclock_id` int(10) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `user_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
