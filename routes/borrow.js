@@ -32,6 +32,21 @@ router.get('/:id', express.json(), checkUserAuthorization, (req, res, next) => {
     );
 });
 
+// get this equipment
+router.get('/equipment/:id', express.json(), checkUserAuthorization, (req, res, next) => {
+    connection.execute(
+        'SELECT * FROM borrow WHERE deleted = 1 AND equipment_id = ? ORDER BY borrow_id DESC LIMIT 1',
+        [req.params.id],
+        (err, results, fields) => {
+            if (err) {
+                res.json({ status: 'error', message: err });
+                return;
+            }
+            res.json({ status: 'success', message: results })
+        }
+    );
+});
+
 // create borrow
 router.post('/create_borrow', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
