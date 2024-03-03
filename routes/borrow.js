@@ -47,11 +47,11 @@ router.get('/equipment/:id', express.json(), checkUserAuthorization, (req, res, 
     );
 });
 
-// create borrow
-router.post('/create_borrow', express.json(), checkUserAuthorization, (req, res, next) => {
+// borrow
+router.post('/borrow', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
-        'INSERT INTO `borrow` (user_id, equipment_id, status) VALUES (?, ?, ?)',
-        [req.body.user_id, req.body.equipment_id, req.body.status],
+        'INSERT INTO `borrow` (user_id, equipment_id, borrow_date) VALUES (?, ?, NOW())',
+        [req.body.user_id, req.body.equipment_id],
         (err, results, fields) => {
             if (err) {
                 res.json({ status: 'error', message: err });
@@ -62,12 +62,12 @@ router.post('/create_borrow', express.json(), checkUserAuthorization, (req, res,
     );
 });
 
-// delete status
-router.put('/delete_borrow/:id', express.json(), checkUserAuthorization, (req, res, next) => {
+// return
+router.put('/return/:id', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
-        'UPDATE borrow SET deleted = 0 WHERE borrow_id = ?',
+        'UPDATE borrow SET return_date = NOW() WHERE borrow_id = ?',
         [req.params.id],
-        function (err, results, fields) {
+        (err, results, fields) => {
             if (err) {
                 res.json({ status: 'error', message: err });
                 return;
