@@ -17,6 +17,20 @@ router.get('/', express.json(), checkUserAuthorization, (req, res, next) => {
     );
 });
 
+// get all borrow return
+router.get('/borrow_return', express.json(), (req, res, next) => {
+    connection.execute(
+        'SELECT borrow_id, borrow_date, return_date, borrow.deleted AS deleted, equipment, firstname, lastname ,rank_s FROM borrow LEFT JOIN equipment ON borrow.equipment_id = equipment.equipment_id LEFT JOIN user ON borrow.user_id = user.user_id INNER JOIN rank ON user.rank = rank.rank_id WHERE borrow.deleted = 1 ORDER BY borrow_id DESC',
+        (err, results, fields) => {
+            if (err) {
+                res.json({ status: 'error', message: err });
+                return;
+            }
+            res.json({ status: 'success', message: results })
+        }
+    );
+});
+
 // get this borrow
 router.get('/:id', express.json(), checkUserAuthorization, (req, res, next) => {
     connection.execute(
