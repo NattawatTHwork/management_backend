@@ -4,6 +4,10 @@ var app = express();
 
 app.use(cors());
 
+app.get('/', function (req, res) {
+    res.send('Hello World!');
+  });
+
 app.use('/login', require('./routes/login'));
 app.use('/auth', require('./routes/auth'));
 app.use('/user', require('./routes/user'));
